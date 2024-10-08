@@ -86,8 +86,7 @@ class App extends Component {
         inputs: [
           {
             data: {
-              image: isBase64 ? { base64: input.split(',')[1] } : { url: input   
- },
+              image: isBase64 ? { base64: input.split(',')[1] } : { url: input},
             },
           },
         ],
@@ -95,8 +94,7 @@ class App extends Component {
     };
   
  fetch(
-      `https://api.clarifai.com/v2/models/${modelId}/versions/${modelVersionId}/outputs`,
-      requestOptions
+      `https://api.clarifai.com/v2/models/${modelId}/versions/${modelVersionId}/outputs`,requestOptions
     )
       .then((response) => response.json())
       .then((result) => {
