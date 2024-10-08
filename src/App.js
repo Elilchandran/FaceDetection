@@ -21,40 +21,37 @@ class App extends Component {
   constructor() {
     super();
     this.state = {
-      input: '',  // Initialize input state for image URL.
-      imageUrl: '',  // Initialize state for the detected image URL.
-      faceBox: {},  // Initialize state for face bounding box coordinates.
-      genderInfo: {},  // Initialize state for gender detection information.
-      route: localStorage.getItem('route') || 'SignIn',  // Set the initial route based on local storage or default to 'SignIn'.
-      isSignIn: localStorage.getItem('isSignIn') === 'true' || false,  // Set sign-in status based on local storage or default to false.
+      input: '',
+      imageUrl: '',
+      faceBox: {},
+      genderInfo: {},
+      route: localStorage.getItem('route') || 'SignIn',
+      isSignIn: localStorage.getItem('isSignIn') === 'true' || false,
+      isLoading: false, // New state for loading indicator
     };
   }
 
- // Function to update the state with the provided bounding box for displaying the face on the image.
-displayFaceBox = (scaledBox) => {
-  //console.log('Face Box:', scaledBox);
-  this.setState({ faceBox: scaledBox });
-};
+  displayFaceBox = (scaledBox) => {
+    this.setState({ faceBox: scaledBox });
+  };
 
-// Function to update the state with gender information for display.
-displayGenderInfo = (genderInfo) => {
-  // console.log('Gender Info:', genderInfo);
-   this.setState({ genderInfo: genderInfo });
- };
- 
- // Function to update the state with the user input for image URL.
- onInputChange = (event) => {
-   this.setState({ input: event.target.value });
- };
- 
-// Function triggered when the user submits an image for processing. 
+  displayGenderInfo = (genderInfo) => {
+    this.setState({ genderInfo: genderInfo });
+  };
+
+  onInputChange = (event) => {
+    this.setState({ input: event.target.value });
+  };
+
   onButtonSubmit = () => {
     const { input } = this.state;
 
     if (!input) {
-      //console.error('Input URL is empty');
       return;
     }
+
+    // Set loading state to true before API calls
+    this.setState({ isLoading: true });
 
     // Face Detection
     this.callClarifaiAPI(input, MODEL_FACE_ID, MODEL_FACE_VERSION_ID, this.calculateFace);
@@ -64,14 +61,16 @@ displayGenderInfo = (genderInfo) => {
       input,
       MODEL_GENDER_ID,
       MODEL_GENDER_VERSION_ID,
-      this.calculateGender
+      this.calculateGender   
+
     );
   };
+
 
   // Function to make a Clarifai API call for face or gender detection.
   callClarifaiAPI = (input, modelId, modelVersionId, callback) => {
     const isBase64 = input.startsWith('data:image/');
-  
+
     const requestOptions = {
       method: 'POST',
       headers: {
@@ -87,29 +86,34 @@ displayGenderInfo = (genderInfo) => {
         inputs: [
           {
             data: {
-              image: isBase64 ? { base64: input.split(',')[1] } : { url: input },
+              image: isBase64 ? { base64: input.split(',')[1] } : { url: input   
+ },
             },
           },
-
-          
         ],
       }),
     };
   
-    fetch(
+ fetch(
       `https://api.clarifai.com/v2/models/${modelId}/versions/${modelVersionId}/outputs`,
       requestOptions
     )
       .then((response) => response.json())
       .then((result) => {
-        //console.log(`${modelId} API Response:`, result);
-  
+        // Set loading state to false after API calls
+        this.setState({ isLoading: false });
+
         if (result && result.outputs && result.outputs.length > 0) {
           callback(result.outputs[0].data);
           this.setState({ imageUrl: input });
-        } 
+        }
       })
-      .catch((error) => console.error(`Error in ${modelId} API:`, error));
+      .catch((error) => {
+        console.error(`Error in ${modelId} API:`, error);   
+
+        // Set loading state to false on error
+        this.setState({ isLoading: false });
+      });
   };
   
  // Function to process gender information from the Clarifai API response. 
@@ -192,8 +196,8 @@ displayGenderInfo = (genderInfo) => {
   
 
   // Function to render the main application component.
-  render() {
-    const { isSignIn, route, faceBox, genderInfo, imageUrl } = this.state;
+render() {
+    const { isSignIn, route, faceBox, genderInfo, imageUrl, isLoading } = this.state;
 
     return (
       <div className='App'>
@@ -209,7 +213,9 @@ displayGenderInfo = (genderInfo) => {
             <FaceRecognition
               faceBox={faceBox}
               genderInfo={genderInfo}
-              imageUrl={imageUrl}
+              imageUrl={imageUrl}   
+
+              isLoading={isLoading} // Pass loading state to FaceRecognition
             />
           </div>
         ) : route === 'SignIn' ? (
