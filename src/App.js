@@ -94,9 +94,10 @@ class App extends Component {
     };
   
     fetch(
-      `https://api.clarifai.com/v2/models/${modelId}/versions/${modelVersionId}/outputs`,
+      `http://localhost:5000/api/v2/models/${modelId}/versions/${modelVersionId}/outputs`,
       requestOptions
     )
+    
     .then((response) => response.json())
       .then((result) => {
         // Set loading state to false after API calls
