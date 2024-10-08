@@ -9,7 +9,7 @@ import Design from './components/Design';  // Importing the Design component.
 import SignIn from './components/SignIn';  // Importing the SignIn component.
 import Register from './components/Register';  // Importing the Register component.
 
-const CLARIFAI_API_KEY = '74911ad3b1e9418cb551f2b5ebd35635';  // Clarifai API key.
+const CLARIFAI_API_KEY = process.env.REACT_APP_CLARIFAI_API_KEY;  // Clarifai API key.
 const USER_ID = 'clarifai';  // User ID for Clarifai API.
 const APP_ID = 'main';  // App ID for Clarifai API.
 const MODEL_FACE_ID = 'face-detection';  // Model ID for face detection.
@@ -28,6 +28,7 @@ class App extends Component {
       route: localStorage.getItem('route') || 'SignIn',
       isSignIn: localStorage.getItem('isSignIn') === 'true' || false,
       isLoading: false, // New state for loading indicator
+      error: null,  // Added error state
     };
   }
 
@@ -50,6 +51,7 @@ class App extends Component {
       return;
     }
 
+    this.setState({ isLoading: true, error: null });  // Reset error on new submission
     // Set loading state to true before API calls
     this.setState({ isLoading: true });
 
