@@ -86,8 +86,7 @@ class App extends Component {
         inputs: [
           {
             data: {
-              image: isBase64 ? { base64: input.split(',')[1] } : { url: input   
- },
+              image: isBase64 ? { base64: input.split(',')[1] } : { url: input},
             },
           },
         ],
@@ -98,9 +97,8 @@ class App extends Component {
       `/api/v2/models/${modelId}/versions/${modelVersionId}/outputs`,
       requestOptions
     )
-    
-      .then((response) => response.json())
-      .then((result)   => {
+    .then((response) => response.json())
+      .then((result) => {
         // Set loading state to false after API calls
         this.setState({ isLoading: false });
 
