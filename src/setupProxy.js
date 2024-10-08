@@ -4,11 +4,8 @@ module.exports = function(app) {
   app.use(
     '/api',
     createProxyMiddleware({
-      target: 'https://api.clarifai.com',
+      target: 'http://localhost:5000',
       changeOrigin: true,
-      pathRewrite: {
-        '^/api': '', // remove '/api' from the path
-      },
     })
   );
 };
